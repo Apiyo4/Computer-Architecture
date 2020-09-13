@@ -3,6 +3,8 @@ HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
+PUSH = 0b01000101
+POP = 0b01000110
 import sys
 
 class CPU:
@@ -14,6 +16,8 @@ class CPU:
         self.pc = 0
         self.ram = [0]* 256
         self.running = True
+        self.sp = 7
+        self.reg[self.sp] = 244
 
     def load(self):
         """Load a program into memory."""
@@ -98,4 +102,15 @@ class CPU:
                 print(self.reg[reg_num1])
             elif ir == MUL:
                 self.alu("MUL", reg_num1, reg_num2)
+            elif ir == PUSH:
+                index_of_register = self.ram[self.pc + 1]
+                val = self.reg[index_of_register]
+                self.reg[self.sp] -=1
+                self.ram[self.reg[self.sp]] = val
+                
+            elif ir == POP:
+                index_of_the_register = self.ram[self.pc + 1]
+                val = self.ram[self.reg[self.sp]]
+                self.reg[index_of_the_register] = val 
+                self.reg[self.sp] += 1 
             self.pc += instruction_length
